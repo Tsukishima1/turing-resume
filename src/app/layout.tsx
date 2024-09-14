@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { FormProvider } from "@/context/FormProviderForTec";
 import { FormProviderForPla } from "@/context/FormProviderForPla";
+import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
   title: "图灵团队简历投递通道",
@@ -28,6 +29,7 @@ export default function RootLayout({
           <FormProviderForPla>
             {children}
             <Toaster />
+            <Analytics/>
           </FormProviderForPla>
         </FormProvider>
       </body>
