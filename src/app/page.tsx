@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logoPng from '../public/images/turinglogo.png';
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 export default function Home() {
   const router = useRouter();
