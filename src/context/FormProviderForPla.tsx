@@ -3,9 +3,9 @@ import { createContext, useState, useContext } from 'react'
 
 interface FormData {
   name: string;
-  studentId: string;
-  phone: string;
-  class: string;
+  student_id: string;
+  phone_number: string;
+  major: string;
   evaluation: string;
   expertise: string;
   expectation: string;
@@ -20,9 +20,9 @@ interface FormContextType {
 
 const defaultFormData: FormData = {
   name: "",
-  studentId: "",
-  phone: "",
-  class: "",
+  student_id: "",
+  phone_number: "",
+  major: "",
   evaluation: "",
   expertise: "",
   expectation: "",

@@ -28,7 +28,7 @@ export default function RootLayout({
         <FormProvider>
           <FormProviderForPla>
             {children}
-            <Toaster />
+            <Toaster className="print:hidden"/>
             <Analytics/>
           </FormProviderForPla>
         </FormProvider>

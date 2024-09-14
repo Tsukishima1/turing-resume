@@ -10,6 +10,14 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -28,14 +36,15 @@ import logoPng from '@/public/images/turinglogo.png';
 import Link from 'next/link'
 import { useFormContext } from '@/context/FormProviderForTec'
 import { useFormContextForPla } from '@/context/FormProviderForPla'
+import { apiCreateResumeForPla, apiCreateResumeForTec } from '@/api/resume'
 
 const formSchemaForTec = z.object({
   name: z.string(),
   direction: z.string(),
-  studentId: z.string(),
-  phone: z.string(),
+  student_id: z.string(),
+  phone_number: z.string(),
   email: z.string(),
-  class: z.string(),
+  major: z.string(),
   evaluation: z.string(),
   skills: z.string(),
   expectation: z.string(),
@@ -45,9 +54,9 @@ const formSchemaForTec = z.object({
 
 const formSchemaForPla = z.object({
   name: z.string(),
-  studentId: z.string(),
-  phone: z.string(),
-  class: z.string(),
+  student_id: z.string(),
+  phone_number: z.string(),
+  major: z.string(),
   expertise: z.string(),
   evaluation: z.string(),
   expectation: z.string(),
@@ -60,13 +69,13 @@ const ResumeEditPage = () => {
   const { formData, setFormData } = useFormContext();
   const { formDataForPla, setFormDataForPla } = useFormContextForPla();
 
-  useEffect(()=>{
+  useEffect(() => {
     const storedFormData = localStorage.getItem("formData");
-    if(storedFormData){
+    if (storedFormData) {
       setFormData(JSON.parse(storedFormData));
     }
     const storedFormDataForPla = localStorage.getItem("formDataForPla");
-    if(storedFormDataForPla){
+    if (storedFormDataForPla) {
       setFormDataForPla(JSON.parse(storedFormDataForPla));
     }
   }, [setFormData, setFormDataForPla])
@@ -76,10 +85,10 @@ const ResumeEditPage = () => {
     defaultValues: {
       name: formData.name || "",
       direction: formData.direction || "",
-      studentId: formData.studentId || "",
-      phone: formData.phone || "",
+      student_id: formData.student_id || "",
+      phone_number: formData.phone_number || "",
       email: formData.email || "",
-      class: formData.class || "",
+      major: formData.major || "",
       evaluation: formData.evaluation || "",
       skills: formData.skills || "",
       expectation: formData.expectation || "",
@@ -92,9 +101,9 @@ const ResumeEditPage = () => {
     resolver: zodResolver(formSchemaForPla),
     defaultValues: {
       name: formDataForPla.name || "",
-      studentId: formDataForPla.studentId || "",
-      phone: formDataForPla.phone || "",
-      class: formDataForPla.class || "",
+      student_id: formDataForPla.student_id || "",
+      phone_number: formDataForPla.phone_number || "",
+      major: formDataForPla.major || "",
       evaluation: formDataForPla.evaluation || "",
       expertise: formDataForPla.expertise || "",
       expectation: formDataForPla.expectation || "",
@@ -115,8 +124,7 @@ const ResumeEditPage = () => {
     localStorage.setItem("formDataForPla", JSON.stringify({ ...formDataForPla, [field]: value }));
   }
 
-  const onSubmitForTec = (values: z.infer<typeof formSchemaForTec>) => {
-    console.log("创新组字段：", values);
+  const onSubmitForTec = async (values: z.infer<typeof formSchemaForTec>) => {
     for (const key in values) {
       if (Object.prototype.hasOwnProperty.call(values, key)) {
         const value = values[key as keyof typeof values];
@@ -127,11 +135,17 @@ const ResumeEditPage = () => {
       }
     }
     // TODO: 提交表单
-    setUnsubmitted(false);
+    try {
+      const result = await apiCreateResumeForTec(values);
+      console.log("提交成功！", result);
+      toast("提交成功！🎉");
+      setUnsubmitted(false);
+    } catch (error) {
+      console.error("提交大失败！", error);
+    }
   }
 
-  const onSubmitForPla = (values: z.infer<typeof formSchemaForPla>) => {
-    console.log("创业组字段：", values);
+  const onSubmitForPla = async (values: z.infer<typeof formSchemaForPla>) => {
     for (const key in values) {
       if (Object.prototype.hasOwnProperty.call(values, key)) {
         const value = values[key as keyof typeof values];
@@ -142,7 +156,14 @@ const ResumeEditPage = () => {
       }
     }
     // TODO: 提交表单
-    setUnsubmitted(false);
+    try {
+      const result = await apiCreateResumeForPla(values);
+      console.log("提交成功！", result);
+      toast("提交成功！🎉");
+      setUnsubmitted(false);
+    } catch (error) {
+      console.error("提交大失败！", error);
+    }
   }
 
   return (
@@ -165,7 +186,10 @@ const ResumeEditPage = () => {
             </CardHeader>
             <CardContent>
               <Form {...formForTec}>
-                <form onSubmit={formForTec.handleSubmit(onSubmitForTec)} className="space-y-4">
+                <form onSubmit={formForTec.handleSubmit((values, event) => {
+                  event?.preventDefault();
+                  onSubmitForTec(values);
+                })} className="space-y-4">
                   <div className='flex flex-col justify-between'>
                     <p className='font-bold text-xl text-ellipsis flex gap-1 items-center mb-1'><TableOfContents />个人信息</p>
                     <div className='grid grid-cols-3 gap-5 sm:grid-cols-1'>
@@ -189,7 +213,7 @@ const ResumeEditPage = () => {
                       />
                       <FormField
                         control={formForTec.control}
-                        name="studentId"
+                        name="student_id"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className='text-muted-foreground'>学号</FormLabel>
@@ -197,7 +221,7 @@ const ResumeEditPage = () => {
                               <Input placeholder="202211991299" {...field}
                                 onChange={(e) => {
                                   field.onChange(e);
-                                  handleInputChange("studentId", e.target.value);
+                                  handleInputChange("student_id", e.target.value);
                                 }}
                               />
                             </FormControl>
@@ -207,15 +231,15 @@ const ResumeEditPage = () => {
                       />
                       <FormField
                         control={formForTec.control}
-                        name="class"
+                        name="major"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className='text-muted-foreground'>班级</FormLabel>
+                            <FormLabel className='text-muted-foreground'>专业名称</FormLabel>
                             <FormControl>
-                              <Input placeholder="计科1241" {...field}
+                              <Input placeholder="计算机科学与技术" {...field}
                                 onChange={(e) => {
                                   field.onChange(e);
-                                  handleInputChange("class", e.target.value);
+                                  handleInputChange("major", e.target.value);
                                 }} />
                             </FormControl>
                             <FormMessage />
@@ -231,10 +255,24 @@ const ResumeEditPage = () => {
                           <FormItem>
                             <FormLabel className='text-muted-foreground'>方向</FormLabel>
                             <FormControl>
-                              <Input placeholder="前端" {...field} onChange={(e) => {
+                              {/* <Input placeholder="前端" {...field} onChange={(e) => {
                                 field.onChange(e);
                                 handleInputChange("direction", e.target.value);
-                              }} />
+                              }} /> */}
+                              <Select  {...field} onValueChange={(e) => {
+                                field.onChange(e);
+                                handleInputChange("direction", e);
+                              }}>
+                                <SelectTrigger className='w-full' id='placeholder'>
+                                  <SelectValue placeholder="请选择你的方向" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="前端">前端</SelectItem>
+                                  <SelectItem value="后端">后端</SelectItem>
+                                  <SelectItem value="计算机视觉">计算机视觉</SelectItem>
+                                  <SelectItem value="自然语言处理">自然语言处理</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -242,14 +280,14 @@ const ResumeEditPage = () => {
                       />
                       <FormField
                         control={formForTec.control}
-                        name="phone"
+                        name="phone_number"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className='text-muted-foreground'>电话号码</FormLabel>
                             <FormControl>
                               <Input placeholder="198*******4" {...field} className='mt-0 w-full' onChange={(e) => {
                                 field.onChange(e);
-                                handleInputChange("phone", e.target.value);
+                                handleInputChange("phone_number", e.target.value);
                               }} />
                             </FormControl>
                             <FormMessage />
@@ -367,6 +405,10 @@ const ResumeEditPage = () => {
                               <FormLabel className='text-muted-foreground'></FormLabel>
                               <FormControl>
                                 <Textarea placeholder="是否准备参加学生会或者社团协会组织？是否能坚持学习方向知识，做到不随意放弃？" {...field} className='w-full'
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    handleInputChange("others", e.target.value);
+                                  }}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -399,7 +441,10 @@ const ResumeEditPage = () => {
             </CardHeader>
             <CardContent>
               <Form {...formForPla}>
-                <form onSubmit={formForPla.handleSubmit(onSubmitForPla)} className="space-y-4">
+                <form onSubmit={formForPla.handleSubmit((values, event) => {
+                  event?.preventDefault();
+                  onSubmitForPla(values);
+                })} className="space-y-4">
                   <div className='flex flex-col justify-between'>
                     <p className='font-bold text-xl text-ellipsis flex gap-1 items-center'><TableOfContents />个人信息</p>
                     <div className='grid grid-cols-4 gap-5 sm:grid-cols-1'>
@@ -423,7 +468,7 @@ const ResumeEditPage = () => {
                       />
                       <FormField
                         control={formForPla.control}
-                        name="studentId"
+                        name="student_id"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className='text-muted-foreground'>学号</FormLabel>
@@ -431,7 +476,7 @@ const ResumeEditPage = () => {
                               <Input placeholder="202211991299" {...field}
                                 onChange={(e) => {
                                   field.onChange(e);
-                                  handleInputChangeForPla("studentId", e.target.value);
+                                  handleInputChangeForPla("student_id", e.target.value);
                                 }}
                               />
                             </FormControl>
@@ -441,15 +486,15 @@ const ResumeEditPage = () => {
                       />
                       <FormField
                         control={formForPla.control}
-                        name="class"
+                        name="major"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className='text-muted-foreground'>班级</FormLabel>
+                            <FormLabel className='text-muted-foreground'>专业名称</FormLabel>
                             <FormControl>
-                              <Input placeholder="计科1241" {...field}
+                              <Input placeholder="工商管理" {...field}
                                 onChange={(e) => {
                                   field.onChange(e);
-                                  handleInputChangeForPla("class", e.target.value);
+                                  handleInputChangeForPla("major", e.target.value);
                                 }}
                               />
                             </FormControl>
@@ -459,7 +504,7 @@ const ResumeEditPage = () => {
                       />
                       <FormField
                         control={formForPla.control}
-                        name="phone"
+                        name="phone_number"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className='text-muted-foreground'>电话号码</FormLabel>
@@ -467,7 +512,7 @@ const ResumeEditPage = () => {
                               <Input placeholder="13144612411" {...field} className='mt-0 w-full'
                                 onChange={(e) => {
                                   field.onChange(e);
-                                  handleInputChangeForPla("phone", e.target.value);
+                                  handleInputChangeForPla("phone_number", e.target.value);
                                 }}
                               />
                             </FormControl>
@@ -592,7 +637,7 @@ const ResumeEditPage = () => {
                         e.preventDefault();
                         window.print();
                       }}
-                       disabled={unsubmitted}
+                      disabled={unsubmitted}
                     >点 击 打 印</Button>
                   </div>
                 </form>
