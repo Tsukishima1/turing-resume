@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center h-[100vh] bg-zinc-200/30">
-      <div className="flex flex-col w-[50%] gap-5 cursor-default sm:w-[70%] mb-10">
+      <div className="flex flex-col w-[50%] gap-5 cursor-default sm:w-[70%] mb-10 sm:mb-0">
         <Image src={logoPng} alt="turinglogo" width={100} height={100} className="sm:w-[50px]"></Image>
         <p className="text-4xl font-bold">Welcome to Turing Team! ✨</p>
         <div className="text-muted-foreground cursor-default text-wrap flex flex-col gap-3 text-[1.1rem]">

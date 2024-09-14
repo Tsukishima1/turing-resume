@@ -158,7 +158,7 @@ const ResumeEditPage = () => {
           <TabsTrigger value="planning" className='h-[40px] text-md font-bold sm:h-[45px] sm:text-[1.1rem]'>创业组简历填写</TabsTrigger>
         </TabsList>
         <TabsContent value="technical">
-          <Card className="w-full p-10 print:border-none print:shadow-none print:p-0" id='card'>
+          <Card className="w-full p-10 print:border-none print:shadow-none print:p-0 sm:p-5" id='card'>
             <CardHeader className='mb-5 print:mb-2'>
               <CardTitle className='text-center text-[2rem] cursor-default'>图灵智能创新团队创新组招新简历</CardTitle>
               <CardDescription className='text-center print:hidden'>请认真填写你的简历信息！</CardDescription>
@@ -376,7 +376,7 @@ const ResumeEditPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className='grid grid-cols-2 gap-5 print:hidden'>
+                  <div className='grid grid-cols-2 gap-5 print:hidden sm:grid-cols-1'>
                     <Button type="submit" className='w-full font-bold sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem]'>提 交</Button>
                     <Button className='w-full font-bold bg-zinc-500 sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem] hover:bg-zinc-500/95'
                       onClick={(e) => {
@@ -585,7 +585,7 @@ const ResumeEditPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className='grid grid-cols-2 gap-5 print:hidden'>
+                  <div className='grid grid-cols-2 gap-5 print:hidden sm:grid-cols-1'>
                     <Button type="submit" className='w-full font-bold sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem]'>提 交</Button>
                     <Button className='w-full font-bold bg-zinc-500 sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem] hover:bg-zinc-500/90'
                       onClick={(e) => {
