@@ -141,7 +141,6 @@ const ResumeEditPage = () => {
     try {
       const result = await apiCreateResumeForTec(values);
       console.log("提交成功！", result);
-      setLoading(false);
       toast("提交成功！🎉");
       setUnsubmitted(false);
     } catch (error: unknown) {
@@ -155,6 +154,8 @@ const ResumeEditPage = () => {
       } else {
         console.error("An unexpected error occurred", error);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -174,7 +175,6 @@ const ResumeEditPage = () => {
     try {
       const result = await apiCreateResumeForPla(values);
       console.log("提交成功！", result);
-      setLoading(false);
       toast("提交成功！🎉");
       setUnsubmitted(false);
     } catch (error: unknown) {
@@ -188,6 +188,8 @@ const ResumeEditPage = () => {
       } else {
         console.error("An unexpected error occurred", error);
       }
+    } finally {
+      setLoading(false);
     }
   }
 
