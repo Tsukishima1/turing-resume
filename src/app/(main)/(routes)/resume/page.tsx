@@ -28,7 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Flame, LibraryBig, MessageSquareQuote, Sparkle, Sticker, TableOfContents, Terminal } from 'lucide-react'
+import { Flame, LibraryBig, LoaderCircle, MessageSquareQuote, Sparkle, Sticker, TableOfContents, Terminal } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import Image from 'next/image'
@@ -37,6 +37,7 @@ import Link from 'next/link'
 import { useFormContext } from '@/context/FormProviderForTec'
 import { useFormContextForPla } from '@/context/FormProviderForPla'
 import { apiCreateResumeForPla, apiCreateResumeForTec } from '@/api/resume'
+import axios from 'axios'
 
 const formSchemaForTec = z.object({
   name: z.string(),
@@ -66,6 +67,7 @@ const formSchemaForPla = z.object({
 
 const ResumeEditPage = () => {
   const [unsubmitted, setUnsubmitted] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { formData, setFormData } = useFormContext();
   const { formDataForPla, setFormDataForPla } = useFormContextForPla();
 
@@ -125,6 +127,7 @@ const ResumeEditPage = () => {
   }
 
   const onSubmitForTec = async (values: z.infer<typeof formSchemaForTec>) => {
+    setLoading(true);
     for (const key in values) {
       if (Object.prototype.hasOwnProperty.call(values, key)) {
         const value = values[key as keyof typeof values];
@@ -138,14 +141,26 @@ const ResumeEditPage = () => {
     try {
       const result = await apiCreateResumeForTec(values);
       console.log("提交成功！", result);
+      setLoading(false);
       toast("提交成功！🎉");
       setUnsubmitted(false);
-    } catch (error) {
-      console.error("提交大失败！", error);
+    } catch (error: unknown) {
+      // console.error("提交大失败！", error);
+      if (axios.isAxiosError(error)) {
+        if (!error.response?.data) {
+          toast("❗请检查网络连接！❗")
+        } else if (error.response.data.message === "参数校验失败") {
+          toast("❗请检查学号、电话号码以及邮箱地址是否合法❗")
+        }
+      } else {
+        console.error("An unexpected error occurred", error);
+      }
     }
-  }
+  };
+
 
   const onSubmitForPla = async (values: z.infer<typeof formSchemaForPla>) => {
+    setLoading(true);
     for (const key in values) {
       if (Object.prototype.hasOwnProperty.call(values, key)) {
         const value = values[key as keyof typeof values];
@@ -159,10 +174,20 @@ const ResumeEditPage = () => {
     try {
       const result = await apiCreateResumeForPla(values);
       console.log("提交成功！", result);
+      setLoading(false);
       toast("提交成功！🎉");
       setUnsubmitted(false);
-    } catch (error) {
-      console.error("提交大失败！", error);
+    } catch (error: unknown) {
+      // console.error("提交大失败！", error);
+      if (axios.isAxiosError(error)) {
+        if (!error.response?.data) {
+          toast("❗请检查网络连接！❗")
+        } else if (error.response.data.message === "参数校验失败") {
+          toast("❗请检查学号、电话号码以及邮箱地址是否合法❗")
+        }
+      } else {
+        console.error("An unexpected error occurred", error);
+      }
     }
   }
 
@@ -419,7 +444,9 @@ const ResumeEditPage = () => {
                     </div>
                   </div>
                   <div className='grid grid-cols-2 gap-5 print:hidden sm:grid-cols-1'>
-                    <Button type="submit" className='w-full font-bold sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem]'>提 交</Button>
+                    <Button type="submit" className='w-full font-bold sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem]'>
+                      {loading ? <LoaderCircle className='animate-spin w-6 h-6'/> : "提 交"}
+                    </Button>
                     <Button className='w-full font-bold bg-zinc-500 sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem] hover:bg-zinc-500/95'
                       onClick={(e) => {
                         e.preventDefault();
@@ -631,7 +658,9 @@ const ResumeEditPage = () => {
                     </div>
                   </div>
                   <div className='grid grid-cols-2 gap-5 print:hidden sm:grid-cols-1'>
-                    <Button type="submit" className='w-full font-bold sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem]'>提 交</Button>
+                    <Button type="submit" className='w-full font-bold sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem]'>
+                      {loading ? <LoaderCircle className='animate-spin w-6 h-6'/> : "提 交"}
+                    </Button>
                     <Button className='w-full font-bold bg-zinc-500 sm:h-[55px] sm:text-[1.1rem] h-[55px] text-[1.05rem] hover:bg-zinc-500/90'
                       onClick={(e) => {
                         e.preventDefault();
